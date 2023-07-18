@@ -36,7 +36,7 @@ st.markdown(
     """
     <style>
     .stApp {
-        background-color: #008000;
+        background-color: #d8efff;
     }
     </style>
     """,
@@ -46,7 +46,7 @@ st.markdown(
 import streamlit as st
 
 # Define the path to your logo image
-logo_image = "path/to/your/logo.png"
+logo_image = "Ophy-Care.png"
 
 # Display the logo on the upper left corner using CSS
 st.image(logo_image, width=100, use_column_width=False,
