@@ -31,6 +31,19 @@ naive_model = get_model()
 
 st.title("Sentiment Analysis Bot")
 
+# Custom CSS to change background color
+st.markdown(
+    """
+    <style>
+    .stApp {
+        background-color: #87CEFA;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+
 # Page Description
 st.write(
     """
