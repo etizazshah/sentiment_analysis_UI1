@@ -42,6 +42,9 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+# Add logo
+logo_image = "Ophy-Care.png"  # Replace with the path to your logo image
+st.image(logo_image, use_column_width=True)
 
 
 # Page Description
