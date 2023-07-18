@@ -94,7 +94,7 @@ st.markdown(
     """
     <style>
     .reportview-container {
-        background-color: #FFC0CB;
+        background-color: #87CEFA;
     }
     </style>
     """,
