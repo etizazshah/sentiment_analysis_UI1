@@ -28,7 +28,7 @@ naive_model = get_model()
 
 # Building the front end
 
-st.title("Sentiment Bot")
+st.title("Sentiment Analysis Bot for Research")
 
 # Initialize chat history
 if "messages" not in st.session_state:
@@ -40,7 +40,7 @@ for message in st.session_state.messages:
         st.markdown(message["content"])
 
 # React to user input
-if prompt := st.chat_input("Enter your text here"):
+if prompt := st.chat_input("Enter your feedback here"):
     # Display user message in chat message container
     st.chat_message("user").markdown(prompt)
     # Add user message to chat history
@@ -53,10 +53,10 @@ if prompt := st.chat_input("Enter your text here"):
 
     # Determine sentiment label
     if sentiment[0] == 1:
-        response = "I sense a positive sentiment!"
+        response = "Thanks for an encouraging feedback!"
         print(sentiment)
     elif sentiment[0] == 0:
-        response = "I sense a negative sentiment!"
+        response = "We are sorry!!"
         print(sentiment[0])
     else:
         response = "I'm not sure about the sentiment."
