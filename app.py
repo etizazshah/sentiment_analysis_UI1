@@ -9,95 +9,51 @@ import nltk
 nltk.download('punkt')
 nltk.download('wordnet')
 
-# Function to clear text box after submission
-def clear_text():
-    st.session_state.feedback_text = ""
-
-# Function to handle user feedback
-def handle_feedback():
-    if st.session_state.feedback_text:
-        # Display user message in chat message container
-        st.chat_message("user").markdown(st.session_state.feedback_text)
-        # Analyze sentiment using your model
-        new_text = preprocess_text(st.session_state.feedback_text)
-        new_text = text_vectorizer.transform([new_text]).toarray()
-        sentiment = naive_model.predict(new_text)  # Replace `predict()` with the appropriate method for sentiment analysis
-
-        # Determine sentiment label
-        if sentiment[0] == 1:
-            response = "Thanks for your encouraging feedback! We are glad you liked our service."
-        elif sentiment[0] == 0:
-            response = "We are sorry to hear that. We will work on improving our service."
-        else:
-            response = "I'm not sure about the sentiment. Could you provide more details?"
-
-        # Display assistant response in chat message container
-        st.chat_message("assistant").markdown(response)
-
-        # Clear text box
-        clear_text()
-
-# Load the saved model from a file
-@st.cache_resource
-def vec():
-    with open("./Models/count_vectorizer.pkl", "rb") as f:
-        vectorizer = pickle.load(f)
-    return vectorizer
-
-text_vectorizer = vec()
-
-@st.cache_resource
-def get_model():
-    model = joblib.load("./Models/naive_model.pkl")
-    return model
-
-naive_model = get_model()
-
-# Set pink background
-st.markdown(
-    """
-    <style>
-    body {
-        background-color: #FFC0CB;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
+# Set the page configuration
+st.set_page_config(
+    page_title="Sentiment Analysis Bot for Research",
+    page_icon="random",  # Add your logo here or use a font-awesome icon name
+    layout="centered",
+    initial_sidebar_state="expanded",
 )
 
-# Add a help page
-st.sidebar.title("Help")
-st.sidebar.info("Welcome to our Sentiment Analysis Bot for Research! Type in your feedback in the textbox below and click the Submit button. The bot will analyze the sentiment of your feedback and respond accordingly. Enjoy your interaction!")
+# Load the vectorizer and model
+@st.cache(allow_output_mutation=True)
+def load_resources():
+    vectorizer = pickle.load(open("./Models/count_vectorizer.pkl", "rb"))
+    model = joblib.load(open("./Models/naive_model.pkl", "rb"))
+    return vectorizer, model
 
-# Add random logo
-st.sidebar.image("https://example.com/random_logo.png", use_column_width=True)
+text_vectorizer, naive_model = load_resources()
 
 # Building the front end
 
 st.title("Sentiment Analysis Bot for Research")
-st.markdown("Welcome to our Sentiment Analysis Bot! Type in your feedback below to see how our bot responds.")
+
+# Page Description
+st.write(
+    "Welcome to our Sentiment Analysis Bot for Research! This bot can analyze the sentiment of your feedback or text and provide appropriate responses."
+)
 
 # Initialize chat history
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Text box for user input
-if "feedback_text" not in st.session_state:
-    st.session_state.feedback_text = ""
-
-feedback_text = st.text_area("Your Feedback", height=100, max_chars=None, value=st.session_state.feedback_text)
-
-# Submit button
-if st.button("Submit"):
-    handle_feedback()
+# Display chat messages from history on app rerun
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
 
 # React to user input
-if prompt := feedback_text:
+if prompt := st.text_area("Enter your feedback here"):
     # Display user message in chat message container
     st.chat_message("user").markdown(prompt)
+    # Add user message to chat history
+    st.session_state.messages.append({"role": "user", "content": prompt})
+
     # Analyze sentiment using your model
-    new_text = preprocess_text(prompt)
-    new_text = text_vectorizer.transform([new_text]).toarray()
+    new_text = preprocess_text([prompt])
+    new_text = text_vectorizer.transform(new_text).toarray()
     sentiment = naive_model.predict(new_text)  # Replace `predict()` with the appropriate method for sentiment analysis
 
     # Determine sentiment label
@@ -111,5 +67,24 @@ if prompt := feedback_text:
     # Display assistant response in chat message container
     st.chat_message("assistant").markdown(response)
 
-    # Clear text box
-    clear_text()
+    # Clear text box after submission
+    prompt = ""
+
+# Help Page
+if st.button("Help"):
+    st.subheader("Help")
+    st.write(
+        "If you need any assistance or have questions about the bot, feel free to ask. We are here to help you!"
+    )
+
+# Pink Background
+st.markdown(
+    """
+    <style>
+    .reportview-container {
+        background-color: #FFC0CB;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
