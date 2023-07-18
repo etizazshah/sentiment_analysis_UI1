@@ -45,15 +45,6 @@ st.markdown(
 # Add logo
 import streamlit as st
 
-# Define the path to your logo image
-logo_image = "Ophy-Care.png"
-
-# Display the logo on the upper left corner using CSS
-st.image(logo_image, width=100, use_column_width=False,
-         caption="", format="PNG",
-         output_format="auto", use_container_width=False,
-         clamp=False, channels="RGB",
-         output_channels="auto", **{"object-fit": "cover", "position": "absolute", "top": "10px", "left": "10px"})
 
 
 
