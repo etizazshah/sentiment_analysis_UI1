@@ -9,24 +9,25 @@ import nltk
 nltk.download('punkt')
 nltk.download('wordnet')
 
-# Set the page configuration
-st.set_page_config(
-    page_title="Sentiment Analysis Bot",
-    page_icon=":smiley:",  # Add your logo here or use a font-awesome icon name
-    layout="centered",
-    initial_sidebar_state="expanded",
-)
 
-# Load the vectorizer and model
-@st.cache(allow_output_mutation=True)
-def load_resources():
-    vectorizer = pickle.load(open("./Models/count_vectorizer.pkl", "rb"))
-    model = joblib.load(open("./Models/naive_model.pkl", "rb"))
-    return vectorizer, model
+@st.cache_resource
+def vec():
+    # Load the saved model from a file
+    with open("./Models/count_vectorizer.pkl", "rb") as f:
+        vectorizer = pickle.load(f)
+    return vectorizer
 
-text_vectorizer, naive_model = load_resources()
+text_vectorizer = vec()
+
+@st.cache_resource
+def get_model():
+    model = joblib.load("./Models/naive_model.pkl")
+    return model
+
+naive_model = get_model()
 
 # Building the front end
+
 
 st.title("Sentiment Analysis Bot")
 
@@ -50,6 +51,7 @@ st.info(
     """
 )
 
+
 # Initialize chat history
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -60,30 +62,32 @@ for message in st.session_state.messages:
         st.markdown(message["content"])
 
 # React to user input
-if prompt := st.text_area("Enter your feedback here"):
+if prompt := st.chat_input("Enter your feedback here"):
     # Display user message in chat message container
     st.chat_message("user").markdown(prompt)
     # Add user message to chat history
     st.session_state.messages.append({"role": "user", "content": prompt})
 
     # Analyze sentiment using your model
-    new_text = preprocess_text([prompt])
+    new_text = preprocess_text(prompt)
     new_text = text_vectorizer.transform(new_text).toarray()
     sentiment = naive_model.predict(new_text)  # Replace `predict()` with the appropriate method for sentiment analysis
 
     # Determine sentiment label
     if sentiment[0] == 1:
         response = "Thanks for your encouraging feedback! We are glad you liked our service."
+        print(sentiment)
     elif sentiment[0] == 0:
         response = "We are sorry to hear that. We will work on improving our service."
+        print(sentiment[0])
     else:
-        response = "I'm not sure about the sentiment. Could you provide more details?"
+        response = "I'm not sure about the sentiment."
 
     # Display assistant response in chat message container
-    st.chat_message("assistant").markdown(response)
-
-    # Clear text box after submission
-    prompt = ""
+    with st.chat_message("assistant"):
+        st.markdown(response)
+    # Add assistant response to chat history
+    st.session_state.messages.append({"role": "assistant", "content": response})
 
 # Pink Background
 st.markdown(
@@ -95,4 +99,3 @@ st.markdown(
     </style>
     """,
     unsafe_allow_html=True,
-)
