@@ -30,7 +30,7 @@ naive_model = get_model()
 # Add Logo
 #st.image("Ophy-Care.png", use_column_width=True)
 # Add Logo in the Sidebar
-st.sidebar.image("Ophy Care-03.png", use_column_width=True)
+st.sidebar.image("Ophy Care-01.png", use_column_width=True)
 
 st.title("Sentiment Analysis Bot")
 
