@@ -29,12 +29,12 @@ naive_model = get_model()
 # Building the front end
 
 # Add Logo in the Sidebar with Pinkish Background
-st.sidebar.image("Ophy Care.pdf", use_column_width=True)
+st.sidebar.image("Ophy Care-01.png", use_column_width=True)
 st.sidebar.markdown(
     """
     <style>
     .sidebar .sidebar-content {
-        background-color: #FFC0CB;
+        background-color: #DFF0D8;
     }
     </style>
     """,
