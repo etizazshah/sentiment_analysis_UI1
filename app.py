@@ -52,7 +52,7 @@ st.write(
 st.info(
     """
     Privacy Note:
-    This bot collects and analyzes user feedback to improve our services. We respect your privacy and ensure that your data is used solely for research purposes. We do not share your personal information with any third parties. If you have any concerns, please contact us at support@email.com.
+    This bot collects and analyzes user feedback to improve our services. We respect your privacy and ensure that your data is used solely for research purposes. We do not share your personal information with any third parties. If you have any concerns, please contact us at support@gmail.com.
     """
 )
 
