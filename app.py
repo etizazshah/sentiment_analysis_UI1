@@ -27,19 +27,28 @@ def get_model():
 naive_model = get_model()
 
 # Building the front end
-# Add Logo
-#st.image("Ophy-Care.png", use_column_width=True)
-# Add Logo in the Sidebar
-st.sidebar.image("Ophy Care-01.png", use_column_width=True)
+
+# Add Logo in the Sidebar with Pinkish Background
+st.sidebar.image("Ophy-Care.png", use_column_width=True)
+st.sidebar.markdown(
+    """
+    <style>
+    .sidebar .sidebar-content {
+        background-color: #FFC0CB;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
 # Company Information
 st.sidebar.write(
     """
     **OphyCare's Mission:**
-    OphyCare is a post-revenue early stage company building Cloud Based Electronic Medical Record (EMR) for International Medical Relief Organizations like "Doctors without Borders". 90% of medical mission and relief organizations don't have proper software to manage patient data. More than 50% of these organizations use pen and paper and the ones who digitally store the data, use MS word or Google Drive. We are providing EPIC like EMR to these organizations where they can store the patient data which is accessible to doctors anywhere from the world. Along with storing patient data, it also gives live updates and statistical data to donors to track their money to the exact patient it was spent on. We have a huge traction and have launched our product with Palestine Children's Relief Fund with great success. We are looking for strategic partners, investors and advisors to join us.
+    We at OphyCare support humanitarian organizations that help people most in need. Using EMR (electronic health record) and analytical tools, we cater to those working in adverse conditions, often across borders, who have unique, project-specific goals.
     """
 )
 st.title("Sentiment Analysis Bot")
-
 
 
 # Page Description
