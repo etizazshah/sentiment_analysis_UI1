@@ -28,7 +28,7 @@ naive_model = get_model()
 
 # Building the front end
 
-st.sidebar.image("Ophy-Care.png", use_column_width=True)
+st.sidebar.image("Ophy-Care.jpg", use_column_width=True)
 st.markdown(
     """
     <style>
