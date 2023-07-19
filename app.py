@@ -31,7 +31,13 @@ naive_model = get_model()
 #st.image("Ophy-Care.png", use_column_width=True)
 # Add Logo in the Sidebar
 st.sidebar.image("Ophy Care-01.png", use_column_width=True)
-
+# Company Information
+st.sidebar.write(
+    """
+    **OphyCare's Mission:**
+    We at OphyCare support humanitarian organizations that help people most in need. Using EMR (electronic health record) and analytical tools, we cater to those working in adverse conditions, often across borders, who have unique, project-specific goals.
+    """
+)
 st.title("Sentiment Analysis Bot")
 
 
