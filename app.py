@@ -94,16 +94,16 @@ if prompt := st.chat_input("Enter your feedback here"):
         st.session_state.messages.append({"role": "assistant", "content": "Invalid input! Please enter a valid text."})
     else:
         # Analyze sentiment using your model
-        new_text = preprocess_text(prompt)
+        new_text_preprocessed = preprocess_text(prompt)
         
         # Check if the preprocessing resulted in an empty string
-        if not new_text:
+        if not new_text_preprocessed:
             with st.chat_message("assistant"):
                 st.markdown("Invalid input! Please enter a valid text.")
             st.session_state.messages.append({"role": "assistant", "content": "Invalid input! Please enter a valid text."})
         else:
-            new_text = text_vectorizer.transform([new_text]).toarray()
-            sentiment = naive_model.predict(new_text)  # Replace `predict()` with the appropriate method for sentiment analysis
+            new_text_vectorized = text_vectorizer.transform([new_text_preprocessed]).toarray()
+            sentiment = naive_model.predict(new_text_vectorized)  # Replace `predict()` with the appropriate method for sentiment analysis
 
             # Determine sentiment label
             if sentiment[0] == 1:
