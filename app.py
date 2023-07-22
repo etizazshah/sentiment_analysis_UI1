@@ -97,25 +97,24 @@ if prompt := st.chat_input("Enter your feedback here"):
 
         # Check if the preprocessing resulted in an empty string
         if not new_text_preprocessed:
-            raise ValueError("Could you please provide more context or rephrase your feedback?")
-         
-        # Check if the word "like" is in the preprocessed text and set sentiment accordingly
-        if "like" in new_text_preprocessed.lower():
-            sentiment = [1]  # Positive sentiment for "like"
+            raise ValueError("Invalid input! Please enter a valid text.")
+
+        # Check if the input contains only one word
+        if len(new_text_preprocessed.split()) == 1:
+            response = "Your feedback is appreciated! However, it seems like you've provided only one word. Please share more details for better analysis."
         else:
             new_text_vectorized = text_vectorizer.transform([new_text_preprocessed]).toarray()
             sentiment = naive_model.predict(new_text_vectorized)  # Replace `predict()` with the appropriate method for sentiment analysis
 
-    
-        # Determine sentiment label
-        if sentiment[0] == 1:
-            response = "Seems like you are happy!"
-            print(sentiment)
-        elif sentiment[0] == 0:
-            response = "We are sorry to hear that."
-            print(sentiment[0])
-        else:
-            response = "I'm not sure about the sentiment."
+            # Determine sentiment label
+            if sentiment[0] == 1:
+                response = "Thanks for your encouraging feedback! We are glad you liked our service."
+                print(sentiment)
+            elif sentiment[0] == 0:
+                response = "We are sorry to hear that. We will work on improving our service."
+                print(sentiment[0])
+            else:
+                response = "I'm not sure about the sentiment."
 
         # Display assistant response in chat message container
         with st.chat_message("assistant"):
