@@ -147,7 +147,7 @@ if prompt := st.chat_input("Enter your feedback here"):
                 elif sentiment_label == 0:
                     response = "We are sorry to hear that."
                 else:
-                    response = "I'm not sure about the sentiment."
+                    response = "I did not get your point. Can you please ellaborate?"
 
         # Display assistant response in chat message container
         with st.chat_message("assistant"):
