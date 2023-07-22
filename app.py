@@ -104,10 +104,10 @@ if prompt := st.chat_input("Enter your feedback here"):
 
         # Determine sentiment label
         if sentiment[0] == 1:
-            response = "Thanks for your encouraging feedback! We are glad you liked our service."
+            response = "Seems like you are happy!"
             print(sentiment)
         elif sentiment[0] == 0:
-            response = "We are sorry to hear that. We will work on improving our service."
+            response = "We are sorry to hear that."
             print(sentiment[0])
         else:
             response = "I'm not sure about the sentiment."
