@@ -92,6 +92,10 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
+
+# Define a set of additional stopwords
+additional_stopwords = {"like", "how", "other", "similar", "words"}
+
 # React to user input
 if prompt := st.chat_input("Enter your feedback here"):
     # Display user message in chat message container
@@ -105,7 +109,7 @@ if prompt := st.chat_input("Enter your feedback here"):
             raise ValueError("Invalid input! Please enter a valid text.")
 
         # Analyze sentiment using your model
-        new_text_preprocessed = preprocess_text(prompt)
+        new_text_preprocessed = preprocess_text(prompt, additional_stopwords)
 
         # Check if the preprocessing resulted in an empty string
         if not new_text_preprocessed:
