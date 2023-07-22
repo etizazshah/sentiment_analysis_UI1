@@ -71,7 +71,6 @@ st.info(
     """
 )
 
-
 # Initialize chat history
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -88,26 +87,39 @@ if prompt := st.chat_input("Enter your feedback here"):
     # Add user message to chat history
     st.session_state.messages.append({"role": "user", "content": prompt})
 
-    # Analyze sentiment using your model
-    new_text = preprocess_text(prompt)
-    new_text = text_vectorizer.transform(new_text).toarray()
-    sentiment = naive_model.predict(new_text)  # Replace `predict()` with the appropriate method for sentiment analysis
-
-    # Determine sentiment label
-    if sentiment[0] == 1:
-        response = "Thanks for your encouraging feedback! We are glad you liked our service."
-        print(sentiment)
-    elif sentiment[0] == 0:
-        response = "We are sorry to hear that. We will work on improving our service."
-        print(sentiment[0])
+    # Check if the prompt is a string, if not, display an error message
+    if not isinstance(prompt, str):
+        with st.chat_message("assistant"):
+            st.markdown("Invalid input! Please enter a valid text.")
+        st.session_state.messages.append({"role": "assistant", "content": "Invalid input! Please enter a valid text."})
     else:
-        response = "I'm not sure about the sentiment."
+        # Analyze sentiment using your model
+        new_text = preprocess_text(prompt)
+        
+        # Check if the preprocessing resulted in an empty string
+        if not new_text:
+            with st.chat_message("assistant"):
+                st.markdown("Invalid input! Please enter a valid text.")
+            st.session_state.messages.append({"role": "assistant", "content": "Invalid input! Please enter a valid text."})
+        else:
+            new_text = text_vectorizer.transform([new_text]).toarray()
+            sentiment = naive_model.predict(new_text)  # Replace `predict()` with the appropriate method for sentiment analysis
 
-    # Display assistant response in chat message container
-    with st.chat_message("assistant"):
-        st.markdown(response)
-    # Add assistant response to chat history
-    st.session_state.messages.append({"role": "assistant", "content": response})
+            # Determine sentiment label
+            if sentiment[0] == 1:
+                response = "Thanks for your encouraging feedback! We are glad you liked our service."
+                print(sentiment)
+            elif sentiment[0] == 0:
+                response = "We are sorry to hear that. We will work on improving our service."
+                print(sentiment[0])
+            else:
+                response = "I'm not sure about the sentiment."
+
+            # Display assistant response in chat message container
+            with st.chat_message("assistant"):
+                st.markdown(response)
+            # Add assistant response to chat history
+            st.session_state.messages.append({"role": "assistant", "content": response})
 
 # Pink Background
 st.markdown(
