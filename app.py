@@ -92,6 +92,10 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
+
+# Define a set of additional stopwords
+additional_stopwords = {"how", "other", "similar", "words"}
+
 # React to user input
 if prompt := st.chat_input("Enter your feedback here"):
     # Display user message in chat message container
@@ -113,18 +117,24 @@ if prompt := st.chat_input("Enter your feedback here"):
 
         # Check if the input contains only one word
         if len(new_text_preprocessed.split()) == 1:
+            # Ask for more details for proper sentiment analysis
             response = "Your feedback is appreciated! However, it seems like you've provided only one word. Please share more details for better analysis."
         else:
+            # Perform sentiment analysis on the main feedback
             new_text_vectorized = text_vectorizer.transform([new_text_preprocessed]).toarray()
             sentiment = naive_model.predict(new_text_vectorized)  # Replace `predict()` with the appropriate method for sentiment analysis
 
             # Determine sentiment label
-            if sentiment[0] == 1:
+            if "like" in new_text_preprocessed.lower():
+                # Set sentiment to positive if the word "like" is present
+                sentiment_label = 1
+            else:
+                sentiment_label = sentiment[0]
+
+            if sentiment_label == 1:
                 response = "Thanks for your encouraging feedback! We are glad you liked our service."
-                print(sentiment)
-            elif sentiment[0] == 0:
+            elif sentiment_label == 0:
                 response = "We are sorry to hear that. We will work on improving our service."
-                print(sentiment[0])
             else:
                 response = "I'm not sure about the sentiment."
 
