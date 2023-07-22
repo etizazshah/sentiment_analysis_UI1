@@ -101,8 +101,6 @@ if prompt := st.chat_input("Enter your feedback here"):
 
         # Check if the input contains only one word
         if len(new_text_preprocessed.split()) == 1:
-            response = "Your feedback is appreciated! However, it seems like you've provided only one word. Please share more details for better analysis."
-        else:
             new_text_vectorized = text_vectorizer.transform([new_text_preprocessed]).toarray()
             sentiment = naive_model.predict(new_text_vectorized)  # Replace `predict()` with the appropriate method for sentiment analysis
 
@@ -116,11 +114,36 @@ if prompt := st.chat_input("Enter your feedback here"):
             else:
                 response = "I'm not sure about the sentiment."
 
-        # Display assistant response in chat message container
-        with st.chat_message("assistant"):
-            st.markdown(response)
-        # Add assistant response to chat history
-        st.session_state.messages.append({"role": "assistant", "content": response})
+            # Display assistant response in chat message container
+            with st.chat_message("assistant"):
+                st.markdown(response)
+            # Add assistant response to chat history
+            st.session_state.messages.append({"role": "assistant", "content": response})
+
+            # Now ask for more detailed feedback
+            detailed_feedback = st.text_input("Please provide more detailed feedback:")
+            # Add detailed feedback to chat history
+            st.session_state.messages.append({"role": "user", "content": detailed_feedback})
+        else:
+            # Proceed with the usual sentiment analysis
+            new_text_vectorized = text_vectorizer.transform([new_text_preprocessed]).toarray()
+            sentiment = naive_model.predict(new_text_vectorized)  # Replace `predict()` with the appropriate method for sentiment analysis
+
+            # Determine sentiment label
+            if sentiment[0] == 1:
+                response = "Thanks for your encouraging feedback! We are glad you liked our service."
+                print(sentiment)
+            elif sentiment[0] == 0:
+                response = "We are sorry to hear that. We will work on improving our service."
+                print(sentiment[0])
+            else:
+                response = "I'm not sure about the sentiment."
+
+            # Display assistant response in chat message container
+            with st.chat_message("assistant"):
+                st.markdown(response)
+            # Add assistant response to chat history
+            st.session_state.messages.append({"role": "assistant", "content": response})
 
     except Exception as e:
         # Handle any errors that occur during preprocessing or prediction
