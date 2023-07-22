@@ -92,11 +92,9 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
+
 # Define a set of additional stopwords
 additional_stopwords = {"how", "why", "other", "similar", "words"}
-
-# Set the threshold value for neutral sentiment
-neutral_threshold = 0.5
 
 # React to user input
 if prompt := st.chat_input("Enter your feedback here"):
@@ -129,23 +127,19 @@ if prompt := st.chat_input("Enter your feedback here"):
             else:
                 # Perform sentiment analysis on the main feedback
                 new_text_vectorized = text_vectorizer.transform([new_text_preprocessed]).toarray()
-                sentiment = naive_model.predict_proba(new_text_vectorized)  # Use predict_proba to get the probability of each class
+                sentiment = naive_model.predict(new_text_vectorized)  # Replace `predict()` with the appropriate method for sentiment analysis
 
                 # Determine sentiment label
                 if "like" in new_text_preprocessed.lower():
                     # Set sentiment to positive if the word "like" is present
                     sentiment_label = 1
                 else:
-                    # Check if sentiment is neutral based on threshold
-                    if abs(sentiment[0][1] - 0.5) <= neutral_threshold:
-                        sentiment_label = -1  # Neutral sentiment
-                    else:
-                        sentiment_label = sentiment[0][1] > 0.5  # Positive sentiment if probability > 0.5, otherwise negative
+                    sentiment_label = sentiment[0]
 
                 if sentiment_label == 1:
-                    response = "Thanks for your encouraging feedback! We are glad you liked our service."
+                    response = "Thanks for showing positivity!"
                 elif sentiment_label == 0:
-                    response = "We are sorry to hear that. We will work on improving our service."
+                    response = "We are sorry to hear that."
                 else:
                     response = "I'm not sure about the sentiment."
 
