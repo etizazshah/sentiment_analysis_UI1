@@ -92,6 +92,7 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
+
 # Define a set of additional stopwords
 additional_stopwords = {"how", "other", "similar", "words"}
 
@@ -119,27 +120,23 @@ if prompt := st.chat_input("Enter your feedback here"):
             # Ask for more details for proper sentiment analysis
             response = "Your feedback is appreciated! However, it seems like you've provided only one word. Please share more details for better analysis."
         else:
-            # Check if the input is a question
-            if "?" in new_text_preprocessed:
-                response = "Thank you for your question! However, to better understand the context, could you provide more feedback or details?"
+            # Perform sentiment analysis on the main feedback
+            new_text_vectorized = text_vectorizer.transform([new_text_preprocessed]).toarray()
+            sentiment = naive_model.predict(new_text_vectorized)  # Replace `predict()` with the appropriate method for sentiment analysis
+
+            # Determine sentiment label
+            if "like" in new_text_preprocessed.lower():
+                # Set sentiment to positive if the word "like" is present
+                sentiment_label = 1
             else:
-                # Perform sentiment analysis on the main feedback
-                new_text_vectorized = text_vectorizer.transform([new_text_preprocessed]).toarray()
-                sentiment = naive_model.predict(new_text_vectorized)  # Replace `predict()` with the appropriate method for sentiment analysis
+                sentiment_label = sentiment[0]
 
-                # Determine sentiment label
-                if "like" in new_text_preprocessed.lower():
-                    # Set sentiment to positive if the word "like" is present
-                    sentiment_label = 1
-                else:
-                    sentiment_label = sentiment[0]
-
-                if sentiment_label == 1:
-                    response = "Thanks for your encouraging feedback! We are glad you liked our service."
-                elif sentiment_label == 0:
-                    response = "We are sorry to hear that. We will work on improving our service."
-                else:
-                    response = "I'm not sure about the sentiment."
+            if sentiment_label == 1:
+                response = "Thanks for your encouraging feedback!"
+            elif sentiment_label == 0:
+                response = "We are sorry to hear that."
+            else:
+                response = "I'm not sure about the sentiment."
 
         # Display assistant response in chat message container
         with st.chat_message("assistant"):
