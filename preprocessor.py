@@ -30,7 +30,7 @@ def preprocess_text(text: Union[str, float]) -> str:
     text = ' '.join(word[1:] if word.startswith('#') else word for word in text.split())
 
     # Removing stopwords and lemmatization
-    text = remove_stopwords(text.lower())
+   # text = remove_stopwords(text.lower())
     text = word_tokenize(text)
     text = ' '.join([lemma.stem(word) for word in text])
 
