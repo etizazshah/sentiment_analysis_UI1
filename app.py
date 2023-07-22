@@ -92,23 +92,6 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-import random
-import time
-import joblib
-import pickle
-import streamlit as st
-from preprocessor import preprocess_text
-import nltk
-nltk.download('punkt')
-nltk.download('wordnet')
-
-# Rest of the code remains the same
-
-# ... (previous code)
-
-# Define a set of additional stopwords
-additional_stopwords = {"like", "how", "other", "similar", "words"}
-
 # React to user input
 if prompt := st.chat_input("Enter your feedback here"):
     # Display user message in chat message container
@@ -122,7 +105,7 @@ if prompt := st.chat_input("Enter your feedback here"):
             raise ValueError("Invalid input! Please enter a valid text.")
 
         # Analyze sentiment using your model
-        new_text_preprocessed = preprocess_text(prompt, additional_stopwords)
+        new_text_preprocessed = preprocess_text(prompt)
 
         # Check if the preprocessing resulted in an empty string
         if not new_text_preprocessed:
