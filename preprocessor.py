@@ -6,9 +6,13 @@ from gensim.parsing.preprocessing import remove_stopwords
 from sklearn.feature_extraction.text import CountVectorizer
 from nltk import word_tokenize
 import nltk  # Import NLTK (Natural Language Toolkit) for natural language processing tasks
+from typing import Union
 
-
-
+def preprocess_text(text: Union[str, float]) -> str:
+    if isinstance(text, float):
+        # Return an empty string for missing or NaN values
+        return ""
+        
 def preprocess_text(text):
     # Instantiating our lemmatizer
     lemma = EnglishStemmer()
