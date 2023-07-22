@@ -5,14 +5,9 @@ import pickle
 import streamlit as st
 from preprocessor import preprocess_text
 import nltk
-from nltk.corpus import stopwords
 nltk.download('punkt')
 nltk.download('wordnet')
-nltk.download('stopwords')
 
-# Load the NLTK stopwords and a list of common names
-stop_words = set(stopwords.words('english'))
-common_names = ["john", "mary", "alex", "emma", "james", "sophia", "michael", "olivia"]
 
 @st.cache_resource
 def vec():
@@ -97,37 +92,31 @@ if prompt := st.chat_input("Enter your feedback here"):
         if not isinstance(prompt, str):
             raise ValueError("Invalid input! Please enter a valid text.")
 
-        # Check if the user's input contains a stopword or common name
-        if any(word.lower() in stop_words or word.lower() in common_names for word in prompt.lower().split()):
-            # Ask the user to provide more information
-            st.chat_message("assistant").markdown("Could you please provide more context or rephrase your feedback?")
-            st.session_state.messages.append({"role": "assistant", "content": "Could you please provide more context or rephrase your feedback?"})
+        # Analyze sentiment using your model
+        new_text_preprocessed = preprocess_text(prompt)
+
+        # Check if the preprocessing resulted in an empty string
+        if not new_text_preprocessed:
+            raise ValueError("Could you please provide more context or rephrase your feedback?")
+
+        new_text_vectorized = text_vectorizer.transform([new_text_preprocessed]).toarray()
+        sentiment = naive_model.predict(new_text_vectorized)  # Replace `predict()` with the appropriate method for sentiment analysis
+
+        # Determine sentiment label
+        if sentiment[0] == 1:
+            response = "Thanks for your encouraging feedback! We are glad you liked our service."
+            print(sentiment)
+        elif sentiment[0] == 0:
+            response = "We are sorry to hear that. We will work on improving our service."
+            print(sentiment[0])
         else:
-            # Analyze sentiment using your model
-            new_text_preprocessed = preprocess_text(prompt)
+            response = "I'm not sure about the sentiment."
 
-            # Check if the preprocessing resulted in an empty string
-            if not new_text_preprocessed:
-                raise ValueError("Invalid input! Please enter a valid text.")
-
-            new_text_vectorized = text_vectorizer.transform([new_text_preprocessed]).toarray()
-            sentiment = naive_model.predict(new_text_vectorized)  # Replace `predict()` with the appropriate method for sentiment analysis
-
-            # Determine sentiment label
-            if sentiment[0] == 1:
-                response = "Thanks for your encouraging feedback! We are glad you liked our service."
-                print(sentiment)
-            elif sentiment[0] == 0:
-                response = "We are sorry to hear that. We will work on improving our service."
-                print(sentiment[0])
-            else:
-                response = "I'm not sure about the sentiment."
-
-            # Display assistant response in chat message container
-            with st.chat_message("assistant"):
-                st.markdown(response)
-            # Add assistant response to chat history
-            st.session_state.messages.append({"role": "assistant", "content": response})
+        # Display assistant response in chat message container
+        with st.chat_message("assistant"):
+            st.markdown(response)
+        # Add assistant response to chat history
+        st.session_state.messages.append({"role": "assistant", "content": response})
 
     except Exception as e:
         # Handle any errors that occur during preprocessing or prediction
