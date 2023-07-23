@@ -83,18 +83,6 @@ for message in st.session_state.messages:
 # Initialize a variable to store additional feedback
 additional_feedback = ""
 
-# Initialize chat history
-if "messages" not in st.session_state:
-    st.session_state.messages = []
-
-# Display chat messages from history on app rerun
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
-
-# Define a set of additional stopwords
-additional_stopwords = {"how", "why", "other", "similar", "words"}
-
 # Set the threshold value for neutral sentiment
 neutral_threshold = 0.1  # Adjust this threshold as needed
 
@@ -123,7 +111,7 @@ if prompt := st.chat_input("Enter your feedback here"):
             response = "Your feedback is appreciated! However, it seems like you've provided only one word. Please share more details for better analysis."
         else:
             # Check if the input contains words like "why" or "how"
-            if any(word.lower() in additional_stopwords for word in new_text_preprocessed.split()):
+            if any(word.lower() in new_text_preprocessed.split() for word in additional_stopwords):
                 # Ask for more feedback to understand the context
                 response = "Thank you for your feedback! To better understand your context, could you provide more details or explain 'why' or 'how' you feel this way?"
             else:
@@ -147,7 +135,7 @@ if prompt := st.chat_input("Enter your feedback here"):
                 elif sentiment_label == 0:
                     response = "We are sorry to hear that."
                 else:
-                    response = "I did not get your point. Can you please ellaborate?"
+                    response = "I did not get your point. Can you please elaborate?"
 
         # Display assistant response in chat message container
         with st.chat_message("assistant"):
