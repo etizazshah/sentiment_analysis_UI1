@@ -8,6 +8,9 @@ import nltk
 nltk.download('punkt')
 nltk.download('wordnet')
 
+# Define a set of additional stopwords
+additional_stopwords = {"how", "why", "other", "similar", "words"}
+
 
 @st.cache_resource
 def vec():
