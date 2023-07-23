@@ -8,6 +8,19 @@ import nltk
 nltk.download('punkt')
 nltk.download('wordnet')
 
+import random
+import time
+import joblib
+import pickle
+import streamlit as st
+from preprocessor import preprocess_text
+import nltk
+nltk.download('punkt')
+nltk.download('wordnet')
+
+
+# Initialize chat history
+chat_history = []
 
 @st.cache_resource
 def vec():
@@ -102,8 +115,6 @@ neutral_threshold = 0.1  # Adjust this threshold as needed
 if prompt := st.chat_input("Enter your feedback here"):
     # Display user message in chat message container
     st.chat_message("user").markdown(prompt)
-    # Add user message to chat history
-    st.session_state.messages.append({"role": "user", "content": prompt})
 
     try:
         # Check if the prompt is a string, if not, display an error message
@@ -143,25 +154,31 @@ if prompt := st.chat_input("Enter your feedback here"):
                         sentiment_label = sentiment[0][1] > 0.5  # Positive sentiment if probability > 0.5, otherwise negative
 
                 if sentiment_label == 1:
-                    response = "Thanks for showing positivity!"
+                    response = "Thanks for your encouraging feedback! We are glad you liked our service."
                 elif sentiment_label == 0:
-                    response = "We are sorry to hear that."
+                    response = "We are sorry to hear that. We will work on improving our service."
                 else:
-                    response = "I did not get your point. Can you please ellaborate?"
+                    response = "I'm not sure about the sentiment."
 
         # Display assistant response in chat message container
-        with st.chat_message("assistant"):
-            st.markdown(response)
-        # Add assistant response to chat history
-        st.session_state.messages.append({"role": "assistant", "content": response})
+        st.chat_message("assistant").markdown(response)
+
+        # Add both user and assistant responses to the chat history
+        chat_history.append({"role": "user", "content": prompt})
+        chat_history.append({"role": "assistant", "content": response})
 
     except Exception as e:
         # Handle any errors that occur during preprocessing or prediction
         error_message = f"Error: {str(e)}"
-        with st.chat_message("assistant"):
-            st.markdown(error_message)
-        # Add error message to chat history
-        st.session_state.messages.append({"role": "assistant", "content": error_message})
+        st.chat_message("assistant").markdown(error_message)
+
+        # Add the error message to the chat history
+        chat_history.append({"role": "assistant", "content": error_message})
+
+# Display chat messages from history on app rerun
+for message in chat_history:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
 
 # Pink Background
 st.markdown(
