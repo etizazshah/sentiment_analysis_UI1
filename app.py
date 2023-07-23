@@ -74,24 +74,6 @@ st.info(
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Display chat messages from history on app rerun
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
-
-
-# Initialize a variable to store additional feedback
-additional_feedback = ""
-
-# Initialize chat history
-if "messages" not in st.session_state:
-    st.session_state.messages = []
-
-# Display chat messages from history on app rerun
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
-
 # Define a set of additional stopwords
 additional_stopwords = {"how", "why", "other", "similar", "words"}
 
@@ -102,8 +84,6 @@ neutral_threshold = 0.1  # Adjust this threshold as needed
 if prompt := st.chat_input("Enter your feedback here"):
     # Display user message in chat message container
     st.chat_message("user").markdown(prompt)
-    # Add user message to chat history
-    st.session_state.messages.append({"role": "user", "content": prompt})
 
     try:
         # Check if the prompt is a string, if not, display an error message
@@ -126,6 +106,8 @@ if prompt := st.chat_input("Enter your feedback here"):
             if any(word.lower() in additional_stopwords for word in new_text_preprocessed.split()):
                 # Ask for more feedback to understand the context
                 response = "Thank you for your feedback! To better understand your context, could you provide more details or explain 'why' or 'how' you feel this way?"
+                # Store the additional feedback in the session
+                st.session_state.additional_feedback = prompt
             else:
                 # Perform sentiment analysis on the main feedback
                 new_text_vectorized = text_vectorizer.transform([new_text_preprocessed]).toarray()
@@ -147,30 +129,26 @@ if prompt := st.chat_input("Enter your feedback here"):
                 elif sentiment_label == 0:
                     response = "We are sorry to hear that."
                 else:
-                    response = "I did not get your point. Can you please ellaborate?"
+                    response = "I did not get your point. Can you please elaborate?"
 
         # Display assistant response in chat message container
-        with st.chat_message("assistant"):
-            st.markdown(response)
-        # Add assistant response to chat history
-        st.session_state.messages.append({"role": "assistant", "content": response})
+        st.chat_message("assistant").markdown(response)
 
     except Exception as e:
         # Handle any errors that occur during preprocessing or prediction
         error_message = f"Error: {str(e)}"
-        with st.chat_message("assistant"):
-            st.markdown(error_message)
-        # Add error message to chat history
-        st.session_state.messages.append({"role": "assistant", "content": error_message})
+        st.chat_message("assistant").markdown(error_message)
 
-# Pink Background
-st.markdown(
-    """
-    <style>
-    .reportview-container {
-        background-color: #87CEFA;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
+# Add both user and assistant responses to the chat history
+st.session_state.messages.append({"role": "user", "content": prompt})
+st.session_state.messages.append({"role": "assistant", "content": response})
+
+# If additional feedback is present, analyze it as a new entry
+if hasattr(st.session_state, "additional_feedback"):
+    with st.chat_message("assistant"):
+        st.markdown("Analyzing additional feedback:")
+        st.chat_message("user").markdown(st.session_state.additional_feedback)
+
+    try:
+        # Analyze additional feedback using your model
+        new_text_preprocessed = preprocess_text(st.session
